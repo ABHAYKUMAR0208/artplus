@@ -8,7 +8,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "react-toastify";  // Import toast from react-toastify
 import { addProductFormElements } from "@/config";
 import {
   addNewProduct,
@@ -42,7 +42,6 @@ function AdminProducts() {
 
   const { productList } = useSelector((state) => state.adminProducts);
   const dispatch = useDispatch();
-  const { toast } = useToast();
 
   function onSubmit(event) {
     event.preventDefault();
@@ -54,13 +53,12 @@ function AdminProducts() {
             formData,
           })
         ).then((data) => {
-          console.log(data, "edit");
-
           if (data?.payload?.success) {
             dispatch(fetchAllProducts());
             setFormData(initialFormData);
             setOpenCreateProductsDialog(false);
             setCurrentEditedId(null);
+            toast.success("Product updated successfully!");  // Success toast
           }
         })
       : dispatch(
@@ -74,9 +72,7 @@ function AdminProducts() {
             setOpenCreateProductsDialog(false);
             setImageFile(null);
             setFormData(initialFormData);
-            toast({
-              title: "Product add successfully",
-            });
+            toast.success("Product added successfully!");  // Success toast
           }
         });
   }
@@ -85,6 +81,7 @@ function AdminProducts() {
     dispatch(deleteProduct(getCurrentProductId)).then((data) => {
       if (data?.payload?.success) {
         dispatch(fetchAllProducts());
+        toast.success("Product deleted successfully!");  // Success toast
       }
     });
   }
@@ -100,8 +97,6 @@ function AdminProducts() {
     dispatch(fetchAllProducts());
   }, [dispatch]);
 
-  console.log(formData, "productList");
-
   return (
     <Fragment>
       <div className="mb-5 w-full flex justify-end">
@@ -113,7 +108,7 @@ function AdminProducts() {
         {productList && productList.length > 0
           ? productList.map((productItem) => (
               <AdminProductTile
-              key={productItem._id}
+                key={productItem._id}
                 setFormData={setFormData}
                 setOpenCreateProductsDialog={setOpenCreateProductsDialog}
                 setCurrentEditedId={setCurrentEditedId}

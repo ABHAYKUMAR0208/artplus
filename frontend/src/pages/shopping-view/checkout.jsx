@@ -4,17 +4,17 @@ import { useDispatch, useSelector } from "react-redux";
 import UserCartItemsContent from "@/components/shopping-view/cart-items-content";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
-// import { createNewOrder } from "@/store/shop/order-slice"; // Uncomment and configure the action
+import { createNewOrder } from "@/store/shop/order-slice";
+import { Navigate } from "react-router-dom";
+import { toast } from "react-toastify"; // Import toast from react-toastify
 
 function ShoppingCheckout() {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
+  const { approvalURL } = useSelector((state) => state.shopOrder);
   const [currentSelectedAddress, setCurrentSelectedAddress] = useState(null);
+  const [isPaymentStart, setIsPaymemntStart] = useState(false);
   const dispatch = useDispatch();
-  const { toast } = useToast();
-
-  console.log(currentSelectedAddress, "cartItems");
 
   const totalCartAmount =
     cartItems && cartItems.items && cartItems.items.length > 0
@@ -30,18 +30,12 @@ function ShoppingCheckout() {
       : 0;
 
   function handlePlaceOrder() {
-    if (cartItems.length === 0) {
-      toast({
-        title: "Your cart is empty. Please add items to proceed.",
-        variant: "destructive",
-      });
+    if (!cartItems.items || cartItems.items.length === 0) {
+      toast.error("Your cart is empty. Please add items to proceed"); // Error toast
       return;
     }
     if (currentSelectedAddress === null) {
-      toast({
-        title: "Please select an address to proceed.",
-        variant: "destructive",
-      });
+      toast.error("Please select one address to proceed."); // Error toast
       return;
     }
 
@@ -67,21 +61,27 @@ function ShoppingCheckout() {
         notes: currentSelectedAddress?.notes,
       },
       orderStatus: "pending",
-      paymentMethod: "COD",
-      paymentStatus: "pending",
+      paymentMethod: "Cash on Delivery",
       totalAmount: totalCartAmount,
       orderDate: new Date(),
       orderUpdateDate: new Date(),
+      paymentId: "",
+      payerId: "",
     };
 
-    // Dispatch the order creation action (uncomment the following line after configuring it)
-    // dispatch(createNewOrder(orderData));
-
-    toast({
-      title: "Order placed successfully!",
-      description: "Your order has been placed and will be delivered soon.",
-      variant: "success",
+    dispatch(createNewOrder(orderData)).then((data) => {
+      if (data?.payload?.success) {
+        setIsPaymemntStart(true);
+        toast.success("Your order has been placed successfully!");
+      } else {
+        setIsPaymemntStart(false);
+        toast.error("There was an issue placing your order. Please try again.");
+      }
     });
+  }
+
+  if (approvalURL) {
+    window.location.href = approvalURL;
   }
 
   return (
@@ -97,7 +97,7 @@ function ShoppingCheckout() {
         <div className="flex flex-col gap-4">
           {cartItems && cartItems.items && cartItems.items.length > 0
             ? cartItems.items.map((item) => (
-                <UserCartItemsContent key={item?.productId} cartItem={item} />
+                <UserCartItemsContent cartItem={item} />
               ))
             : null}
           <div className="mt-8 space-y-4">
@@ -108,7 +108,9 @@ function ShoppingCheckout() {
           </div>
           <div className="mt-4 w-full">
             <Button onClick={handlePlaceOrder} className="w-full">
-              Place Order
+              {isPaymentStart
+                ? "Processing Payment..."
+                : "Place Order"}
             </Button>
           </div>
         </div>

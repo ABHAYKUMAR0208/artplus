@@ -10,7 +10,7 @@ import {
   fetchAllAddresses,
 } from "@/store/shop/address-slice";
 import AddressCard from "./address-card";
-import { useToast } from "../ui/use-toast";
+import { toast } from "react-toastify"; // Import toast from react-toastify
 
 const initialAddressFormData = {
   address: "",
@@ -26,18 +26,13 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const { addressList } = useSelector((state) => state.shopAddress);
-  const { toast } = useToast();
 
   function handleManageAddress(event) {
     event.preventDefault();
 
     if (addressList.length >= 3 && currentEditedId === null) {
       setFormData(initialAddressFormData);
-      toast({
-        title: "You can add max 3 addresses",
-        variant: "destructive",
-      });
-
+      toast.error("You can add max 3 addresses"); // Using error toast
       return;
     }
 
@@ -53,9 +48,7 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
             dispatch(fetchAllAddresses(user?.id));
             setCurrentEditedId(null);
             setFormData(initialAddressFormData);
-            toast({
-              title: "Address updated successfully",
-            });
+            toast.success("Address updated successfully"); // Success toast
           }
         })
       : dispatch(
@@ -67,9 +60,7 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
           if (data?.payload?.success) {
             dispatch(fetchAllAddresses(user?.id));
             setFormData(initialAddressFormData);
-            toast({
-              title: "Address added successfully",
-            });
+            toast.success("Address added successfully"); // Success toast
           }
         });
   }
@@ -80,9 +71,7 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
     ).then((data) => {
       if (data?.payload?.success) {
         dispatch(fetchAllAddresses(user?.id));
-        toast({
-          title: "Address deleted successfully",
-        });
+        toast.success("Address deleted successfully"); // Success toast
       }
     });
   }
@@ -109,11 +98,9 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
     dispatch(fetchAllAddresses(user?.id));
   }, [dispatch]);
 
-  console.log(addressList, "addressList");
-
   return (
     <Card>
-      <div className="mb-5 p-3 grid grid-cols-1 sm:grid-cols-2  gap-2">
+      <div className="mb-5 p-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
         {addressList && addressList.length > 0
           ? addressList.map((singleAddressItem) => (
               <AddressCard

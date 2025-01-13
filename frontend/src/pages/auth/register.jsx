@@ -1,5 +1,6 @@
 import CommonForm from "@/components/common/form";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "react-toastify"; // Import React-Toastify
+import "react-toastify/dist/ReactToastify.css"; // Import React-Toastify styles
 import { registerFormControls } from "@/config";
 import { registerUser } from "@/store/auth-slice";
 import { useState } from "react";
@@ -16,27 +17,24 @@ function AuthRegister() {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   function onSubmit(event) {
     event.preventDefault();
+
+    if (!formData.userName || !formData.email || !formData.password) {
+      toast.error("All fields are required!");
+      return;
+    }
+
     dispatch(registerUser(formData)).then((data) => {
-      if (data?.payload?.success){
-       toast({
-           title: data?.payload?.message,
-      });
-      navigate("/auth/login");
+      if (data?.payload?.success) {
+        toast.success(data?.payload?.message || "Registration successful!");
+        navigate("/auth/login");
+      } else {
+        toast.error(data?.payload?.message || "Registration failed. Please try again.");
       }
-        else {
-        toast({
-           title: data?.payload?.message,
-           variant: "destructive",
-         });
-       }
     });
   }
-
-  console.log(formData);
 
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
@@ -45,7 +43,7 @@ function AuthRegister() {
           Create new account
         </h1>
         <p className="mt-2">
-          Already have an account
+          Already have an account?
           <Link
             className="font-medium ml-2 text-primary hover:underline"
             to="/auth/login"

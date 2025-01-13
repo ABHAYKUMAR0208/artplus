@@ -10,7 +10,7 @@ import {
   getOrderDetailsForAdmin,
   updateOrderStatus,
 } from "@/store/admin/order-slice";
-import { useToast } from "../ui/use-toast";
+import { toast } from "react-toastify"; // Import toast from react-toastify
 
 const initialFormData = {
   status: "",
@@ -20,9 +20,6 @@ function AdminOrderDetailsView({ orderDetails }) {
   const [formData, setFormData] = useState(initialFormData);
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  const { toast } = useToast();
-
-  console.log(orderDetails, "orderDetailsorderDetails");
 
   function handleUpdateStatus(event) {
     event.preventDefault();
@@ -35,9 +32,9 @@ function AdminOrderDetailsView({ orderDetails }) {
         dispatch(getOrderDetailsForAdmin(orderDetails?._id));
         dispatch(getAllOrdersForAdmin());
         setFormData(initialFormData);
-        toast({
-          title: data?.payload?.message,
-        });
+        toast.success(data?.payload?.message); // Using success toast from react-toastify
+      } else {
+        toast.error(data?.payload?.message); // Using error toast from react-toastify
       }
     });
   }
@@ -63,18 +60,20 @@ function AdminOrderDetailsView({ orderDetails }) {
             <Label>{orderDetails?.paymentMethod}</Label>
           </div>
           <div className="flex mt-2 items-center justify-between">
-            <p className="font-medium">Payment Status</p>
-            <Label>{orderDetails?.paymentStatus}</Label>
-          </div>
-          <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Order Status</p>
             <Label>
               <Badge
                 className={`py-1 px-3 ${
-                  orderDetails?.orderStatus === "confirmed"
-                    ? "bg-green-500"
-                    : orderDetails?.orderStatus === "rejected"
+                  orderDetails?.orderStatus === "rejected"
                     ? "bg-red-600"
+                    : orderDetails?.orderStatus === "pending"
+                    ? "bg-yellow-500"
+                    : orderDetails?.orderStatus === "process"
+                    ? "bg-blue-500"
+                    : orderDetails?.orderStatus === "shipping"
+                    ? "bg-green-600"
+                    : orderDetails?.orderStatus === "delivered"
+                    ? "bg-green-600"
                     : "bg-black"
                 }`}
               >
@@ -123,8 +122,8 @@ function AdminOrderDetailsView({ orderDetails }) {
                 componentType: "select",
                 options: [
                   { id: "pending", label: "Pending" },
-                  { id: "inProcess", label: "In Process" },
-                  { id: "inShipping", label: "In Shipping" },
+                  { id: "process", label: "In Process" },
+                  { id: "shipping", label: "In Shipping" },
                   { id: "delivered", label: "Delivered" },
                   { id: "rejected", label: "Rejected" },
                 ],

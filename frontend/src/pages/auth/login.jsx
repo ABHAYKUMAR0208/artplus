@@ -1,5 +1,6 @@
 import CommonForm from "@/components/common/form";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "react-toastify"; // Import React-Toastify
+import "react-toastify/dist/ReactToastify.css"; // Import React-Toastify styles
 import { loginFormControls } from "@/config";
 import { loginUser } from "@/store/auth-slice";
 import { useState } from "react";
@@ -14,21 +15,15 @@ const initialState = {
 function AuthLogin() {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
-  const { toast } = useToast();
 
   function onSubmit(event) {
     event.preventDefault();
 
     dispatch(loginUser(formData)).then((data) => {
       if (data?.payload?.success) {
-        toast({
-          title: data?.payload?.message,
-        });
+        toast.success(data?.payload?.message); // Success toast
       } else {
-        toast({
-          title: data?.payload?.message,
-          variant: "destructive",
-        });
+        toast.error(data?.payload?.message); // Error toast
       }
     });
   }

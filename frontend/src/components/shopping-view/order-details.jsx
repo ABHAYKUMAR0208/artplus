@@ -27,10 +27,10 @@ function ShoppingOrderDetailsView({ orderDetails }) {
             <p className="font-medium">Payment method</p>
             <Label>{orderDetails?.paymentMethod}</Label>
           </div>
-          <div className="flex mt-2 items-center justify-between">
+          {/* <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Payment Status</p>
             <Label>{orderDetails?.paymentStatus}</Label>
-          </div>
+          </div> */}
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Order Status</p>
             <Label>
@@ -40,6 +40,14 @@ function ShoppingOrderDetailsView({ orderDetails }) {
                     ? "bg-green-500"
                     : orderDetails?.orderStatus === "rejected"
                     ? "bg-red-600"
+                    : orderDetails?.orderStatus === "pending"
+                    ? "bg-yellow-500"
+                    : orderDetails?.orderStatus === "process"
+                    ? "bg-blue-500"
+                    : orderDetails?.orderStatus === "shipping"
+                    ? "bg-green-600"
+                    : orderDetails?.orderStatus === "delivered"
+                    ? "bg-green-600"
                     : "bg-black"
                 }`}
               >
