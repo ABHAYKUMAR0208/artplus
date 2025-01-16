@@ -11,7 +11,7 @@ import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { useNavigate } from "react-router-dom";
 import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
-import { toast } from "react-toastify"; // Import toast from react-toastify
+import { toast } from "react-toastify";
 import { getFeatureImages } from "@/store/common-slice";
 
 const categories = [
@@ -93,7 +93,7 @@ function ShoppingHome() {
 
     return (
         <div className="flex flex-col min-h-screen">
-            <div className="relative w-full h-[300px] sm:h-[400px] md:h-[800px] overflow-hidden">
+            <div className="relative w-full h-[300px] sm:h-[400px] md:h-[400px] overflow-hidden">
                 {featureImageList && featureImageList.length > 0 ? featureImageList.map((slide, index) => (
                     <img
                         src={slide?.image}

@@ -55,7 +55,7 @@ function UserCartItemsContent({ cartItem }) {
       deleteCartItem({ userId: user?.id, productId: getCartItem?.productId })
     ).then((data) => {
       if (data?.payload?.success) {
-        toast.success("Cart item is deleted successfully"); // Success toast
+        toast.error("Cart item is deleted successfully"); // Success toast
       }
     });
   }

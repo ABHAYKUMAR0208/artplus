@@ -65,7 +65,7 @@ function AdminSideBar({ open, setOpen }) {
             <SheetHeader className="border-b">
               <SheetTitle className="flex gap-2 mt-5 mb-5">
                 <ChartBarIncreasing size={30} />
-                <span className="text-2xl font-extrabold">Admin Panel</span>
+                <span className="text-2xl font-extrabold"></span>
               </SheetTitle>
               <SheetDescription>
               Navigate through admin options here.

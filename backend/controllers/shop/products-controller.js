@@ -14,31 +14,40 @@ const getFilteredProducts = async (req, res) => {
       filters.brand = { $in: brand.split(",") };
     }
 
-    let sort = {};
+    // Fetch products without sorting
+    const products = await Product.find(filters);
 
+    // Sort products
+    let sortedProducts;
     switch (sortBy) {
       case "price-lowtohigh":
-        sort.price = 1;
+        sortedProducts = products.sort((a, b) => {
+          const priceA = a.salePrice > 0 ? a.salePrice : a.price;
+          const priceB = b.salePrice > 0 ? b.salePrice : b.price;
+          return priceA - priceB;
+        });
         break;
       case "price-hightolow":
-        sort.price = -1;
+        sortedProducts = products.sort((a, b) => {
+          const priceA = a.salePrice > 0 ? a.salePrice : a.price;
+          const priceB = b.salePrice > 0 ? b.salePrice : b.price;
+          return priceB - priceA;
+        });
         break;
       case "title-atoz":
-        sort.title = 1;
+        sortedProducts = products.sort((a, b) => a.title.localeCompare(b.title));
         break;
       case "title-ztoa":
-        sort.title = -1;
+        sortedProducts = products.sort((a, b) => b.title.localeCompare(a.title));
         break;
       default:
-        sort.price = 1;
+        sortedProducts = products; // No sorting
         break;
     }
 
-    const products = await Product.find(filters).sort(sort);
-
     res.status(200).json({
       success: true,
-      data: products,
+      data: sortedProducts,
     });
   } catch (e) {
     console.log(e); // Corrected error logging

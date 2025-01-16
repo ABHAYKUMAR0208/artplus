@@ -6,11 +6,14 @@ import "react-toastify/dist/ReactToastify.css"; // Import Toastify styles
 import { checkAuth } from "./store/auth-slice";
 import { Skeleton } from "@/components/ui/skeleton";
 import "./index.css";
+import ContactUs from './pages/footerdata/contact-us';
 
 // Authentication components and pages
 import AuthLayout from "./components/auth/layout";
 import AuthLogin from "./pages/auth/login";
 import AuthRegister from "./pages/auth/register";
+import Footer from "./components/Footer";
+import Header from "./components/header"; // Ensure the correct casing
 
 // Admin pages
 import AdminLayout from "./components/admin-view/layout";
@@ -53,6 +56,9 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen overflow-hidden bg-white">
+      {/* Render the Header component */}
+      <Header />
+
       <Routes>
         {/* Authentication Routes */}
         <Route
@@ -91,26 +97,30 @@ function App() {
         </Route>
 
         {/* Shopping Routes */}
-        <Route
-          path="/shop"
-          element={
-            <CheckAuth isAuthenticated={isAuthenticated} user={user}>
-              <ShoppingLayout />
-            </CheckAuth>
-          }
-        >
-          <Route path="home" element={<ShoppingHome />} />
-          <Route path="listing" element={<ShoppingListing />} />
-          <Route path="account" element={<ShoppingAccount />} />
-          <Route path="checkout" element={<ShoppingCheckout />} />
-          <Route path="payment-success" element={<PaymentSuccessPage />} />
-          <Route path="search" element={<SearchProducts />} />
-        </Route>
+        <Route path="/shop" element={<ShoppingLayout />}>
+  <Route path="home" element={<ShoppingHome />} />
+  <Route path="listing" element={<ShoppingListing />} />
+  <Route path="account" element={<ShoppingAccount />} />
+  <Route path="search" element={<SearchProducts />} />
+  <Route 
+    path="checkout" 
+    element={
+      <CheckAuth isAuthenticated={isAuthenticated} user={user}>
+        <ShoppingCheckout />
+      </CheckAuth>
+    } 
+  />
+  <Route path="payment-success" element={<PaymentSuccessPage />} />
+</Route>
 
         {/* Other Routes */}
         <Route path="/unauth-page" element={<UnauthPage />} />
+        <Route path="/contact-us" element={<ContactUs />} /> {/* Corrected this */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+
+      {/* Render the Footer component */}
+      <Footer />
 
       {/* React-Toastify Toast Container */}
       <ToastContainer
