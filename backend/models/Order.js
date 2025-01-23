@@ -30,4 +30,7 @@ const OrderSchema = new mongoose.Schema({
   payerId: String,
 });
 
-module.exports = mongoose.model("Order", OrderSchema);
+// Check if the model has already been compiled, and if not, compile it
+const Order = mongoose.models.Order || mongoose.model("Order", OrderSchema);
+
+module.exports = Order;

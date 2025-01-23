@@ -35,10 +35,14 @@ const getFilteredProducts = async (req, res) => {
         });
         break;
       case "title-atoz":
-        sortedProducts = products.sort((a, b) => a.title.localeCompare(b.title));
+        sortedProducts = products.sort((a, b) =>
+          a.title.localeCompare(b.title)
+        );
         break;
       case "title-ztoa":
-        sortedProducts = products.sort((a, b) => b.title.localeCompare(a.title));
+        sortedProducts = products.sort((a, b) =>
+          b.title.localeCompare(a.title)
+        );
         break;
       default:
         sortedProducts = products; // No sorting
@@ -83,3 +87,5 @@ const getProductDetails = async (req, res) => {
 };
 
 module.exports = { getFilteredProducts, getProductDetails };
+
+

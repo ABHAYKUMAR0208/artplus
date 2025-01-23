@@ -4,16 +4,24 @@ import {
   LayoutDashboard,
   ShoppingCart,
   Package,
+  ChartPie,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "../ui/sheet";
 
 const adminSidebarMenuItems = [
+
   {
     id: "dashboard",
     label: "Dashboard",
     path: "/admin/dashboard",
     icon: <LayoutDashboard />,
+  },
+  {
+    id: "Sales",
+    label: "Sales Performance",
+    path: "/admin/sales",
+    icon: <ChartPie />,
   },
   {
     id: "products", 

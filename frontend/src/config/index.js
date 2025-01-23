@@ -167,11 +167,11 @@ export const registerFormControls = [
       label: "Color Chart",
       path: "/shop/listing",
     },
-    {
-      id: "search",
-      label: "Search",
-      path: "/shop/search",
-    },
+    // {
+    //   id: "search",
+    //   label: "Search",
+    //   path: "/shop/search",
+    // },
     // {
     //   id: "sale",
     //   label: "Sale",

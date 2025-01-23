@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // Import Link for navigation
-import "./Header.css";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser } from "@/store/auth-slice";
+import {
+  getSearchResults,
+  resetSearchResults,
+} from "@/store/shop/search-slice";
+import { Button } from "./ui/button";
+import { toast } from "react-toastify";
+import logo from "@/assets/logo.jpg";
 
 const Header = () => {
   const messages = [
@@ -10,48 +18,160 @@ const Header = () => {
   ];
 
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // Accessing the correct state slice
+  const { isLoading = false, searchResults = [] } = useSelector(
+    (state) => state.shopSearch || {}
+  );
+  const isLoggedIn = useSelector((state) => state.auth.isAuthenticated);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentMessageIndex((prevIndex) => (prevIndex + 1) % messages.length);
-    }, 2000); // Change message every 2 seconds
+    }, 2000);
 
-    return () => clearInterval(interval); // Cleanup interval on component unmount
+    return () => clearInterval(interval);
   }, [messages.length]);
 
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    toast.error("You have been logged out.");
+  };
+
+  const handleSearch = () => {
+    if (searchKeyword.trim()) {
+      dispatch(getSearchResults(searchKeyword)); // Dispatch action to fetch results
+      navigate("/shop/search"); // Navigate to the search page
+    } else {
+      dispatch(resetSearchResults()); // Reset results if search is empty
+      navigate("/shop/search"); // Navigate to the search page even if there's no keyword
+    }
+  };
+
+  const handleSearchKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   return (
-    <header className="header">
-      <div className="header-top">
-        <span>{messages[currentMessageIndex]}</span>
-        <nav>
-          <Link to="#new-products">New products</Link>
-          <Link to="#blog">Blog</Link>
-          <Link to="#reviews">Reviews</Link>
-          <Link to="#shipping-returns">Shipping & Returns</Link>
-          <Link to="#faqs">FAQs</Link>
-          <Link to="#contact-us">Contact Us</Link>
-          <Link to="#apply-wholesale">Apply for Wholesale</Link>
+    <header className="font-sans text-gray-800">
+      <div className="bg-gray-100 p-3 flex justify-between items-center text-bold">
+        <span className="hidden lg:block">{messages[currentMessageIndex]}</span>
+        <nav className="hidden md:flex space-x-4">
+          {/* <Link
+            to="#new-products"
+            className="text-gray-800 hover:text-purple-800 text-md font-semibold "
+          >
+            New products
+          </Link> */}
+          <Link
+            to="/Blogs"
+            className="text-gray-800 hover:text-purple-800 text-md font-semibold "
+          >
+            Blog
+          </Link>
+          {/* <Link
+            to="#reviews"
+            className="text-gray-800 hover:text-purple-800 text-md font-semibold"
+          >
+            Reviews
+          </Link> */}
+          <Link
+            to="/shipping&return"
+            className="text-gray-800 hover:text-purple-800 text-md font-semibold"
+          >
+            Shipping & Returns
+          </Link>
+          <Link
+            to="/FAQs"
+            className="text-gray-800 hover:text-purple-800 text-md font-semibold"
+          >
+            FAQs
+          </Link>
+          <Link
+            to="/contact-us"
+            className="text-gray-800 hover:text-purple-800 text-md font-semibold"
+          >
+            Contact Us
+          </Link>
+          <Link
+            to="/wholesale"
+            className="text-gray-800 hover:text-purple-800 text-md font-semibold"
+          >
+            Apply for Wholesale
+          </Link>
         </nav>
       </div>
-      <div className="header-main">
-        <div className="logo">
-          <img src="path/to/logo.png" alt="Art-Plus Logo" />
-          <span className="tagline"></span>
+
+      <div className="flex items-center justify-between p-5">
+        <div className="flex justify-center w-full lg:w-auto">
+          <img src={logo} alt="Art-Plus Logo" className="h-24 w-24" />
         </div>
-        <div className="search-bar">
-          <input type="text" placeholder="Search our catalog" />
-          <button>
-            <i className="fa fa-search"></i>
+
+        <div className="flex items-center">
+          <input
+            type="text"
+            placeholder="Search our catalog"
+            className="p-2 border border-gray-300 rounded-l-md"
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            onKeyDown={handleSearchKeyPress}
+          />
+          <button
+            onClick={handleSearch}
+            className="p-2 bg-gray-800 text-white rounded-r-md"
+            disabled={isLoading}
+          >
+            {isLoading ? "Searching..." : "Search"}
           </button>
         </div>
-        <div className="certifications">
-          <img src="path/to/iso.png" alt="ISO Certification" />
-          <img src="path/to/sedex.png" alt="Sedex Membership" />
-          <img src="path/to/goodweave.png" alt="GoodWeave Certification" />
+
+        <div className="hidden lg:flex space-x-3">
+          <img src="path/to/iso.png" alt="ISO Certification" className="h-10" />
+          <img
+            src="path/to/sedex.png"
+            alt="Sedex Membership"
+            className="h-10"
+          />
+          <img
+            src="path/to/goodweave.png"
+            alt="GoodWeave Certification"
+            className="h-10"
+          />
         </div>
-        <div className="user-actions">
-          <Link to="/auth/login">Login</Link>
-          <Link to="/auth/register">Register</Link>
+
+        <div className="hidden lg:flex space-x-4">
+          {isLoggedIn ? (
+            <button
+              onClick={handleLogout}
+              className="inline-flex gap-2 items-center rounded-md px-4 py-2 text-sm font-medium shadow bg-primary text-white"
+            >
+              Logout
+            </button>
+          ) : (
+            <>
+              <Button>
+                <Link
+                  to="/auth/login"
+                  className="text-sm text-white hover:underline"
+                >
+                  Login
+                </Link>
+              </Button>
+              <Button>
+                <Link
+                  to="/auth/register"
+                  className="text-sm text-white hover:underline"
+                >
+                  Register
+                </Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

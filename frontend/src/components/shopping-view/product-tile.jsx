@@ -2,12 +2,26 @@ import { Card, CardContent, CardFooter } from "../ui/card";
 import { Button } from "../ui/button";
 import { brandOptionsMap, categoryOptionsMap } from "@/config";
 import { Badge } from "../ui/badge";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 function ShoppingProductTile({
   product,
   handleGetProductDetails,
   handleAddtoCart,
 }) {
+  // Get authentication status from Redux
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
+  // Wrapper function for Add to Cart to handle authentication check
+  const handleAddToCartClick = () => {
+    if (!isAuthenticated) {
+      toast.error("Login required!"); // Show toast error if not logged in
+      return;
+    }
+    handleAddtoCart(product?._id, product?.totalStock); // Proceed if authenticated
+  };
+
   return (
     <Card className="w-full max-w-sm mx-auto">
       <div onClick={() => handleGetProductDetails(product?._id)}>
@@ -63,10 +77,7 @@ function ShoppingProductTile({
             Out Of Stock
           </Button>
         ) : (
-          <Button
-            onClick={() => handleAddtoCart(product?._id, product?.totalStock)}
-            className="w-full"
-          >
+          <Button onClick={handleAddToCartClick} className="w-full">
             Add to cart
           </Button>
         )}

@@ -15,13 +15,13 @@ import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
 import {
   fetchAllFilteredProducts,
   fetchProductDetails,
+  fetchSaleProducts, // Import the new thunk
 } from "@/store/shop/products-slice";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 
-// Helper function to create search params
 function createSearchParamsHelper(filterParams) {
   const queryParams = [];
 
@@ -37,8 +37,8 @@ function createSearchParamsHelper(filterParams) {
 
 function ShoppingListing() {
   const dispatch = useDispatch();
-  const { productList, productDetails } = useSelector(
-    (state) => state.shopProducts
+  const { productList, productDetails, saleProducts, error } = useSelector(
+    (state) => state.shopProducts // Access the products state
   );
   const { cartItems } = useSelector((state) => state.shopCart);
   const { user } = useSelector((state) => state.auth);
@@ -104,7 +104,7 @@ function ShoppingListing() {
     ).then((data) => {
       if (data?.payload?.success) {
         dispatch(fetchCartItems(user?.id));
-        toast.success("Product is added to cart"); // Success toast
+        toast.success("Product is added to cart"); 
       }
     });
   }
@@ -112,7 +112,8 @@ function ShoppingListing() {
   useEffect(() => {
     setSort("price-lowtohigh");
     setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
-  }, [categorySearchParam]);
+    dispatch(fetchSaleProducts()); // Fetch sale products when the component mounts
+  }, [categorySearchParam, dispatch]);
 
   useEffect(() => {
     if (filters && Object.keys(filters).length > 0) {
@@ -169,6 +170,21 @@ function ShoppingListing() {
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+          {/* Display sale products */}
+          {saleProducts && saleProducts.length > 0 && (
+            <div>
+              <h2 className="text-lg font-extrabold">Products on Sale</h2>
+              {saleProducts.map((productItem) => (
+                <ShoppingProductTile
+                  handleGetProductDetails={handleGetProductDetails}
+                  product={productItem}
+                  handleAddtoCart={handleAddtoCart}
+                  key={productItem.id}
+                />
+              ))}
+            </div>
+          )}
+          {/* Display all products */}
           {productList && productList.length > 0
             ? productList.map((productItem) => (
                 <ShoppingProductTile
