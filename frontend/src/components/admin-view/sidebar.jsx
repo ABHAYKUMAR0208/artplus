@@ -17,12 +17,12 @@ const adminSidebarMenuItems = [
     path: "/admin/dashboard",
     icon: <LayoutDashboard />,
   },
-  {
-    id: "Sales",
-    label: "Sales Performance",
-    path: "/admin/sales",
-    icon: <ChartPie />,
-  },
+  // {
+  //   id: "Sales",
+  //   label: "Sales Performance",
+  //   path: "/admin/sales",
+  //   icon: <ChartPie />,
+  // },
   {
     id: "products", 
     label: "Products",
